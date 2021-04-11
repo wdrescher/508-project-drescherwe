@@ -1,0 +1,21 @@
+version: "2"
+
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - APP_ENVIRONMENT=dev
+      - CLIENT_HOSTNAME=localhost:4200
+      - WEB_CONCURRENCY=2
+      - API_SECRET=the_secret   
+      - JWT_EXPIRE_IN=3600      
+      - DB_USERNAME=drescherwe # api account for db
+      - DB_PASSWORD=V00878196
+      - DB_DB=project_drescherwe
+      - DB_URL=3.238.242.230
+    volumes:
+      - './app:/app'
+    command: ["/start-reload.sh"]
