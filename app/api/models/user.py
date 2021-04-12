@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class Profile(BaseModel): 
-    profile: int
+    profile_id: int
     email: str
     phone_number: str
     first_name: str
@@ -16,5 +16,5 @@ class Client(BaseModel):
 class Artist(BaseModel): 
     max_bookings: str
     is_manager: bool
-    minimum_price: [Optional]str = None
+    minimum_price: Optional[str] = None
     parlor_id: str
