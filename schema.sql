@@ -11,7 +11,7 @@ CREATE TABLE profile(
     first_name varchar(50) NOT NULL, 
     last_name varchar(50) NOT NULL, 
     token_id VARCHAR(64), 
-    CONSTRAINT FOREIGN KEY (token_id) REFERENCES token(bearer)
+    CONSTRAINT FOREIGN KEY (token_id) REFERENCES token(bearer) ON DELETE CASCADE
 );
 
 CREATE TABLE client (
@@ -60,3 +60,18 @@ CREATE TABLE timeslot (
     CONSTRAINT FOREIGN KEY (booking_id) REFERENCES booking(booking_id), 
     CONSTRAINT PRIMARY KEY (date_time, booking_id)
 );
+
+
+-- Functions and Procedures
+---------------------------------
+
+DROP PROCEDURE create_user; 
+DELIMITER //
+
+CREATE PROCEDURE create_user(IN bearer_token varchar(64), IN email varchar(64), IN my_password varchar(100), IN first_name varchar(50), IN last_name varchar(50))
+BEGIN 
+    INSERT INTO token (bearer, expiration_date) VALUES (bearer_token, CURDATE());
+    INSERT INTO profile (email, first_name, last_name, password, token_id) VALUES (email, first_name, last_name, my_password, bearer_token);
+END //
+
+DELIMITER ;
