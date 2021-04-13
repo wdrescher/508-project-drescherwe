@@ -10,3 +10,7 @@ class SignupRequest(BaseModel):
 class AccessRequest(BaseModel): 
     email: str
     password: str
+
+class ResetPasswordRequest(BaseModel): 
+    profile_id: str
+    new_password: str
