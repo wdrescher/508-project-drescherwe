@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+from enum import Enum
 
 from datetime import datetime
 
@@ -23,3 +24,21 @@ class CreateBookingRequest(BaseModel):
 
 class ScheduleBookingRequest(BaseModel): 
     times: List[datetime]
+
+class PaymentMethod(Enum): 
+    TEXT = 'text'
+    EMAIL = 'email'
+    PHONE = 'phone'
+
+class CreateClientRequest(BaseModel): 
+    contact_method: Optional[PaymentMethod]
+    payment_id: Optional[str]
+
+class CreateParlorRequest(BaseModel): 
+    name: str
+    address_line_1: str
+    address_line_2: Optional[str] = None
+    city: str
+    state: str
+    zip: int
+    shop_commission: int

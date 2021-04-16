@@ -3,8 +3,8 @@ from uuid import uuid4
 from passlib.context import CryptContext
 
 from api.services.dependencies import get_user_from_email
-from api.models.requests import SignupRequest
-from api.models.user import PrivateProfile
+from api.models.requests import SignupRequest, CreateClientRequest
+from api.models.user import PrivateProfile, Profile
 
 salt = "jibberish_that_you_would_never_ever_guess"
 
@@ -48,6 +48,31 @@ async def create_user(request: SignupRequest):
     if token is None: 
         raise "Token not found"
     return token
+
+async def create_client(current_user: Profile, request: CreateClientRequest): 
+    async with database.connection(): 
+        client = get_client(current_user)
+
+        result = await database.execute(
+            query="""
+                INSERT INTO client (
+                    payment_id, 
+                    contact_method, 
+                    profile_id
+                ) VALUES (
+                    :payment_id, 
+                    :contact_method, 
+                    :profile_id
+                )
+            """, 
+            values={
+                "profile_id": current_user.profile_id, 
+                "payment_id": request.payment_id, 
+                "contact_method": request.contact_method
+            }
+        )
+    assert result is not None
+    return result
 
 async def check_password(username: str, password: str): 
     profile = await get_user_from_email(username)

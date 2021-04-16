@@ -21,4 +21,4 @@ class SuccessResponse(BaseModel):
     api -> client
     """
 
-    status = 'ok'
+    status = 'ok'    

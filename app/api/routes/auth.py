@@ -8,7 +8,8 @@ from api.models.responses import TokenResponse, LoginResponse
 from api.services.auth import create_user, check_password
 
 router = APIRouter( 
-    prefix="/auth"
+    prefix="/auth", 
+    tags=["Auth"]
 )
 
 @router.post("/signup", response_model=TokenResponse)

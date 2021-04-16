@@ -8,7 +8,8 @@ from api.services.booking import create_booking, get_user_bookings, booking_exis
 from api.services.dependencies import get_current_user
 
 router = APIRouter(
-    prefix="/booking"
+    prefix="/booking", 
+    tags=["Booking"]
 )
 
 @router.post("/create", response_model=Booking)
