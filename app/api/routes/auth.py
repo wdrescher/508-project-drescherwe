@@ -11,10 +11,6 @@ router = APIRouter(
     prefix="/auth"
 )
 
-@router.get("/read-user-me")
-async def read_users_me(current_user: Profile = Depends(get_current_user)):
-    return current_user
-
 @router.post("/signup", response_model=TokenResponse)
 async def singup(request: SignupRequest):
     token = await create_user(request)
