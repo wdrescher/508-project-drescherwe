@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -22,3 +22,9 @@ class Artist(BaseModel):
     is_manager: bool
     minimum_price: Optional[int] = None
     parlor_id: Optional[int] = None
+
+class ArtistProfile(Profile, Artist):
+    ...
+
+class ArtistProfileList(BaseModel): 
+    __root__: List[ArtistProfile]

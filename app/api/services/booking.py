@@ -1,8 +1,32 @@
 from db import database
 
 from api.models.requests import CreateBookingRequest, ScheduleBookingRequest
-from api.models.user import Profile
+from api.models.user import Profile, Client
 from api.models.booking import Booking
+
+async def get_artist_bookings(current_user: Profile): 
+    async with database.connection(): 
+        response = await database.fetch_all(
+            query="""
+                SELECT 
+                    artist_id, 
+                    booking_id, 
+                    client_id, 
+                    design_description, 
+                    design_approved, 
+                    price, 
+                    price_approved, 
+                    CONCAT(profile.first_name, " ", profile.last_name) as artist_name
+                FROM booking 
+                JOIN profile 
+                ON booking.client_id = profile.profile_id
+                WHERE artist_id=:profile_id
+            """, 
+            values={
+                "profile_id": current_user.profile_id
+            }
+        )
+    return response
 
 async def create_booking(request: CreateBookingRequest, current_user: Profile):
     async with database.connection():
@@ -42,7 +66,19 @@ async def get_user_bookings(current_user: Profile):
     async with database.connection(): 
         response = await database.fetch_all(
             query="""
-                SELECT * FROM booking WHERE client_id=:profile_id
+                SELECT 
+                    artist_id, 
+                    booking_id, 
+                    client_id, 
+                    design_description, 
+                    design_approved, 
+                    price, 
+                    price_approved, 
+                    CONCAT(profile.first_name, " ", profile.last_name) as artist_name
+                FROM booking 
+                JOIN profile 
+                ON booking.artist_id = profile.profile_id
+                WHERE client_id=:profile_id
             """, 
             values={
                 "profile_id": current_user.profile_id
@@ -54,7 +90,7 @@ async def set_price(current_user: Profile, booking_id: int, price: int):
     async with database.connection(): 
         response = await database.execute(
             query="""
-                UPDATE booking SET price=:price, price_approved=False WHERE booking_id=:booking_id AND artist_id=:profile_id
+                UPDATE booking SET price=:price, price_approved=False, design_approved=True WHERE booking_id=:booking_id AND artist_id=:profile_id
             """, 
             values={
                 "booking_id": booking_id, 
@@ -124,5 +160,5 @@ async def booking_exists(booking_id: str):
             }
         )
     if response is None: 
-        raise HTTPException("No booking found")
+        raise HTTPException(status=400, detail="No booking found")
     return Booking(**dict(response))

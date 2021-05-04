@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 from api.models.user import Profile, PrivateProfile, Artist
@@ -60,7 +60,7 @@ async def get_user_from_token(token: str):
             values={'token': token}
         )
     if result is None: 
-        raise "Token not found"
+        raise HTTPException(status=400, detail="Token not validated")
     return Profile(**dict(result))
 
 async def get_user_from_email(email: str):

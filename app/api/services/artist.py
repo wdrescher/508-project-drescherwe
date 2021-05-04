@@ -30,6 +30,15 @@ async def create_artist(current_user: Profile, artist: Artist):
     assert response is not None
     return response
 
+async def get_artists(): 
+    async with database.connection(): 
+        result = await database.fetch_all(
+            query="""
+                SELECT * FROM profile JOIN artist ON profile.profile_id = artist.profile_id
+            """
+        )
+    return result
+
 async def edit_artist(current_user: Profile, artist: Artist):
     async with database.connection(): 
         result = await database.execute(

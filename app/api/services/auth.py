@@ -34,7 +34,7 @@ async def create_user(request: SignupRequest):
             }
         )
     if result is None: 
-        raise "User not created"
+        raise "User already exists"
 
     async with database.connection(): 
         token = await database.fetch_one(
@@ -51,8 +51,6 @@ async def create_user(request: SignupRequest):
 
 async def create_client(current_user: Profile, request: CreateClientRequest): 
     async with database.connection(): 
-        client = get_client(current_user)
-
         result = await database.execute(
             query="""
                 INSERT INTO client (

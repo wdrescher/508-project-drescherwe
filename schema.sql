@@ -50,8 +50,8 @@ CREATE TABLE booking (
     design_approved boolean not null, 
     price int not null, 
     price_approved boolean not null, 
-    FOREIGN KEY (artist_id) REFERENCES artist(profile_id),
-    FOREIGN KEY (client_id) REFERENCES client(profile_id)
+    FOREIGN KEY (artist_id) REFERENCES artist(profile_id) ON DELETE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES client(profile_id) ON DELETE CASCADE
 );
 
 CREATE TABLE timeslot (
@@ -66,7 +66,6 @@ CREATE TABLE timeslot (
 ---------------------------------
 
 DROP PROCEDURE create_user; 
-DROP IF EXISTS PROCEDURE create_booking; 
 DELIMITER //
 
 CREATE PROCEDURE create_user(IN bearer_token varchar(64), IN email varchar(64), IN my_password varchar(100), IN first_name varchar(50), IN last_name varchar(50))

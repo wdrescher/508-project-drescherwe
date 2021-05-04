@@ -3,7 +3,7 @@ from datetime import date
 from typing import List
 
 from api.models.user import Profile
-from api.models.booking import Booking
+from api.models.booking import Booking, FullBooking
 
 class TokenResponse(BaseModel): 
     bearer: str
@@ -14,7 +14,7 @@ class LoginResponse(BaseModel):
     token: str
 
 class BookingListResponse(BaseModel): 
-    bookings: List[Booking]
+    bookings: List[FullBooking]
 
 class SuccessResponse(BaseModel):
     """

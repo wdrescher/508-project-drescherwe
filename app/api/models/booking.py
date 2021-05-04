@@ -12,3 +12,6 @@ class Booking(BaseModel):
 class Timeslot(BaseModel): 
     date_time: str
     booking_id: str
+
+class FullBooking(Booking): 
+    artist_name: str
