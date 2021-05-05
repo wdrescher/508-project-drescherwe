@@ -8,6 +8,7 @@ class Profile(BaseModel):
     phone_number: Optional[str]
     first_name: str
     last_name: str
+    is_artist: Optional[bool]
 
 class PrivateProfile(Profile): 
     password: str

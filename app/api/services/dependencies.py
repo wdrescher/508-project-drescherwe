@@ -56,7 +56,19 @@ async def get_user_from_id(profile_id: str):
 async def get_user_from_token(token: str): 
     async with database.connection(): 
         result = await database.fetch_one(
-            query="SELECT * FROM profile WHERE token_id=:token",
+            query="""
+                SELECT 
+                    profile.profile_id, 
+                    email, 
+                    phone_number, 
+                    first_name, 
+                    last_name, 
+                    artist.profile_id IS NOT NULL as is_artist
+                FROM profile 
+                LEFT JOIN artist 
+                ON artist.profile_id = profile.profile_id
+                WHERE token_id=:token
+            """,
             values={'token': token}
         )
     if result is None: 
