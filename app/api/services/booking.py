@@ -160,5 +160,5 @@ async def booking_exists(booking_id: str):
             }
         )
     if response is None: 
-        raise HTTPException(status=400, detail="No booking found")
+        raise HTTPException(400, detail="No booking found")
     return Booking(**dict(response))

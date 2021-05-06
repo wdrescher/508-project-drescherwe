@@ -21,15 +21,16 @@ CREATE TABLE client (
     CONSTRAINT FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
 ) ;
 
-CREATE TABLE parlor (
-	parlor_id int AUTO_INCREMENT PRIMARY KEY, 
-    name varchar(50) not null, 
+CREATE OR REPLACE TABLE parlor (
+	parlor_id int AUTO_INCREMENT UNIQUE, 
+    name varchar(50) NOT NULL, 
     address_line_1 varchar(200) NOT NULL, 
     address_line_2 varchar(200), 
     city varchar(100) NOT NULL, 
     state varchar(20) NOT NULL,
     zip varchar(10) NOT NULL, 
-    shop_commission double NOT NULL
+    shop_commission double NOT NULL,
+    CONSTRAINT PRIMARY KEY (name, address_line_1, city, state, zip)
 );
 
 CREATE TABLE artist (
@@ -46,7 +47,7 @@ CREATE TABLE booking (
     artist_id int, 
     client_id int, 
     booking_id int AUTO_INCREMENT PRIMARY KEY, 
-    design_description varchar(500) not null, --potentially make unique, or included in primary key 
+    design_description varchar(500) UNIQUE not null, -- potentially make unique, or included in primary key 
     design_approved boolean not null, 
     price int not null, 
     price_approved boolean not null, 
@@ -63,7 +64,7 @@ CREATE TABLE timeslot (
 
 
 -- Functions and Procedures
----------------------------------
+-- -------------------------------
 
 DROP PROCEDURE create_user; 
 DELIMITER //
