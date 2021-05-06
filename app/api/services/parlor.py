@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from db import database
 
+from api.models.requests import CreateParlorRequest
 from api.models.parlor import Parlor
 
 async def get_parlor(parlor_id: str): 
@@ -17,19 +18,11 @@ async def get_parlor(parlor_id: str):
         raise HTTPException(status_code=404, detail="No parlor found")
     return Parlor(**dict(parlor))
 
-async def create_parlor(request: Parlor): 
+async def create_parlor(request: CreateParlorRequest): 
     async with database.connection(): 
-        result = await database.execute(
+        result = await database.fetch_one(
             query="""
-                INSERT INTO parlor (
-                    address_line_1, 
-                    address_line_2,
-                    city, 
-                    name, 
-                    shop_commission,
-                    state,
-                    zip
-                ) VALUES (
+                SELECT create_parlor(
                     :address_line_1, 
                     :address_line_2,
                     :city, 
@@ -49,10 +42,16 @@ async def create_parlor(request: Parlor):
                 "zip": request.zip
             }
         )
-        assert result is not None
+        parlor_id = result[0]
+        assert parlor_id is not None
+
         parlor = await database.fetch_one(
             query="""
-                SELECT * FROM parlor WHERE (SELECT LAST_INSERT_ID());
-            """
+                SELECT * FROM parlor WHERE parlor_id = :parlor_id
+            """, 
+            values={
+                'parlor_id': parlor_id
+            }
         )
+
     return Parlor(**dict(parlor))

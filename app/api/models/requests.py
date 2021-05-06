@@ -41,4 +41,4 @@ class CreateParlorRequest(BaseModel):
     city: str
     state: str
     zip: int
-    shop_commission: int
+    shop_commission: float

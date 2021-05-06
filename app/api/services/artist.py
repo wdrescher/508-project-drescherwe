@@ -74,3 +74,15 @@ async def get_parlor(parlor_id: str):
     if parlor is None: 
         raise HTTPException(status_code=404, detail="No parlor found")
     return Parlor(**dict(parlor))
+
+async def set_parlor(user: Profile, parlor_id): 
+    async with database.connection(): 
+        await database.execute(
+            query="""
+                UPDATE artist SET parlor_id = :parlor_id WHERE profile_id = :artist_id
+            """,
+            values={
+                'artist_id': user.profile_id, 
+                'parlor_id': parlor_id
+            }
+        )

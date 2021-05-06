@@ -4,4 +4,4 @@ from pydantic import BaseModel
 from api.models.requests import CreateParlorRequest
 
 class Parlor(CreateParlorRequest): 
-    parlor_id: str
+    parlor_id: int

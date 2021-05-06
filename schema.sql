@@ -73,4 +73,35 @@ BEGIN
     INSERT INTO token (bearer, expiration_date) VALUES (bearer_token, CURDATE());
     INSERT INTO profile (email, first_name, last_name, password, token_id) VALUES (email, first_name, last_name, my_password, bearer_token);
 END //
+
+CREATE OR REPLACE FUNCTION create_parlor(
+    line_1 varchar(50), 
+    line_2 varchar(50), 
+    city varchar(50), 
+    name varchar(100), 
+    shop_commission DOUBLE, 
+    state varchar(2), 
+    zip varchar(5)
+) RETURNS INT
+BEGIN
+	INSERT INTO parlor (
+                    address_line_1, 
+                    address_line_2,
+                    city, 
+                    name, 
+                    shop_commission,
+                    state,
+                    zip
+                ) VALUES (
+                    line_1, 
+                    line_2,
+                    city, 
+                    name, 
+                    shop_commission,
+                    state,
+                    zip
+    );
+    RETURN (SELECT LAST_INSERT_ID());
+END //
+
 DELIMITER ;
