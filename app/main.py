@@ -35,11 +35,16 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title='Tattoo API', description='Tattoo API to provide database functionality to booking software')
 
 
+origins = [
+    f"http://{settings.client_hostname}", 
+    f"https://{settings.client_hostname}"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*", origins],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
