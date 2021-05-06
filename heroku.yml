@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: ["/start-reload.sh"]
+  web: uvicorn app.main:app
