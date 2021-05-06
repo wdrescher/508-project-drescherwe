@@ -21,3 +21,4 @@ email-validator
 pytest
 pytest-ordering
 sendgrid
+uvicorn
