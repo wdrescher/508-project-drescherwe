@@ -1,5 +1,4 @@
 import logging
-import docs
 import os
 import time
 from fastapi import FastAPI, HTTPException
@@ -33,7 +32,7 @@ if "gunicorn" in os.environ.get("SERVER_SOFTWARE", ""):
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title='Tattoo API', description=docs.desc)
+app = FastAPI(title='Tattoo API', description='Tattoo API to provide database functionality to booking software')
 
 
 app.add_middleware(
