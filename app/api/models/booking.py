@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 class Booking(BaseModel): 
     artist_id: int
@@ -16,4 +17,4 @@ class Timeslot(BaseModel):
 
 class FullBooking(Booking): 
     artist_name: str
-    selected_date: datetime
+    selected_date: Optional[datetime]

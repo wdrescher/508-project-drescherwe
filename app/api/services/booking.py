@@ -20,13 +20,16 @@ async def get_artist_bookings(current_user: Profile):
                     price, 
                     price_approved, 
                     CONCAT(profile.first_name, " ", profile.last_name) as artist_name,
-                    timeslot.date_time as selected_date
+                    (
+                        SELECT date_time 
+                        FROM timeslot
+                        WHERE timeslot.booking_id = booking.booking_id AND timeslot.selected = True
+                        LIMIT 1
+                    ) as selected_date
                 FROM booking 
                 JOIN profile 
                 ON booking.client_id = profile.profile_id
-                JOIN timeslot
-                ON booking.booking_id = timeslot.booking_id
-                WHERE artist_id=:profile_id AND timeslot.selected = True
+                WHERE artist_id=:profile_id
             """, 
             values={
                 "profile_id": current_user.profile_id
@@ -81,13 +84,16 @@ async def get_user_bookings(current_user: Profile):
                     price, 
                     price_approved, 
                     CONCAT(profile.first_name, " ", profile.last_name) as artist_name, 
-                    timeslot.date_time as selected_date
+                    (
+                        SELECT date_time 
+                        FROM timeslot
+                        WHERE timeslot.booking_id = booking.booking_id AND timeslot.selected = True
+                        LIMIT 1
+                    ) as selected_date
                 FROM booking 
                 JOIN profile 
                 ON booking.artist_id = profile.profile_id
-                JOIN timeslot 
-                ON booking.booking_id = timeslot.booking_id
-                WHERE client_id=:profile_id AND timeslot.selected = True
+                WHERE client_id=:profile_id
             """, 
             values={
                 "profile_id": current_user.profile_id
@@ -176,7 +182,7 @@ async def select_time(date_time: str, booking_id: int):
     async with database.connection(): 
         result = await database.execute(
             query="""
-                UPDATE timeslot SET selected = (date_time = :date_time) WHERE booking_id = :booking_id AND date_time = :date_time; 
+                UPDATE timeslot SET selected = (date_time = :date_time) WHERE booking_id = :booking_id 
             """, 
             values={
                 "date_time": date_time, 
