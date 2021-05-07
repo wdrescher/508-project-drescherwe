@@ -109,7 +109,7 @@ async def approve_price(current_user: Profile, booking_id: int, approved=True):
             """, 
             values={
                 "booking_id": booking_id,
-                "approved": approved, 
+                "approved": True, 
                 "profile_id": current_user.profile_id
             }
         )
