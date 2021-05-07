@@ -1,11 +1,13 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
 
-from api.models.user import Profile, Client
+from api.models.user import Artist, Profile, Client
 from api.models.booking import Booking
-from api.models.responses import BookingListResponse, SuccessResponse
-from api.models.requests import CreateBookingRequest, ScheduleBookingRequest, CreateClientRequest
-from api.services.booking import create_booking, get_user_bookings, booking_exists, set_price, approve_price, approve_design, schedule_booking, get_artist_bookings
-from api.services.dependencies import get_current_user, get_current_client
+from api.models.responses import BookingListResponse, SuccessResponse, TimeSlotListResponse
+from api.models.requests import CreateBookingRequest, ScheduleBookingRequest, CreateClientRequest, SelectTimeSlotRequest
+from api.services.booking import create_booking, get_times, get_user_bookings, booking_exists, select_time, set_price, approve_price, approve_design, schedule_booking, get_artist_bookings
+from api.services.dependencies import get_current_artist, get_current_user, get_current_client
 from api.services.auth import create_client
 
 router = APIRouter(
@@ -68,3 +70,20 @@ async def schedule_booking_endpoint(request: ScheduleBookingRequest, booking: Bo
     if response is False: 
         raise HTTPException(status_code=301)
     return SuccessResponse()
+
+@router.post("/{booking_id}/select-time")
+async def select_booking_endpoint(request: SelectTimeSlotRequest, booking: Booking = Depends(booking_exists), current_artist: Artist = Depends(get_current_artist)): 
+    assert current_artist is not None
+    
+    response = await select_time(request.date_time, booking.booking_id)
+    assert response is not None
+    return SuccessResponse()
+
+@router.get("/{booking_id}/times", response_model=TimeSlotListResponse)
+async def get_booking_times(booking: Booking = Depends(booking_exists), current_artist: Artist = Depends(get_current_artist)): 
+    if current_artist is None: 
+        raise HTTPException(status_code=401, detail="Not authorized")
+
+    result: List[datetime] = await get_times(booking_id=booking.booking_id)
+    assert result is not None
+    return {"times": result}

@@ -42,3 +42,6 @@ class CreateParlorRequest(BaseModel):
     state: str
     zip: int
     shop_commission: float
+
+class SelectTimeSlotRequest(BaseModel): 
+    date_time: datetime

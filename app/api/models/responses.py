@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, datetime
 from typing import List
 
 from api.models.user import Profile
@@ -22,3 +22,6 @@ class SuccessResponse(BaseModel):
     """
 
     status = 'ok'    
+
+class TimeSlotListResponse(BaseModel): 
+    times: List[datetime]

@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import List
+from fastapi import HTTPException
 from db import database
 
 from api.models.requests import CreateBookingRequest, ScheduleBookingRequest
@@ -10,17 +13,20 @@ async def get_artist_bookings(current_user: Profile):
             query="""
                 SELECT 
                     artist_id, 
-                    booking_id, 
+                    booking.booking_id, 
                     client_id, 
                     design_description, 
                     design_approved, 
                     price, 
                     price_approved, 
-                    CONCAT(profile.first_name, " ", profile.last_name) as artist_name
+                    CONCAT(profile.first_name, " ", profile.last_name) as artist_name,
+                    timeslot.date_time as selected_date
                 FROM booking 
                 JOIN profile 
                 ON booking.client_id = profile.profile_id
-                WHERE artist_id=:profile_id
+                JOIN timeslot
+                ON booking.booking_id = timeslot.booking_id
+                WHERE artist_id=:profile_id AND timeslot.selected = True
             """, 
             values={
                 "profile_id": current_user.profile_id
@@ -68,17 +74,20 @@ async def get_user_bookings(current_user: Profile):
             query="""
                 SELECT 
                     artist_id, 
-                    booking_id, 
+                    booking.booking_id, 
                     client_id, 
                     design_description, 
                     design_approved, 
                     price, 
                     price_approved, 
-                    CONCAT(profile.first_name, " ", profile.last_name) as artist_name
+                    CONCAT(profile.first_name, " ", profile.last_name) as artist_name, 
+                    timeslot.date_time as selected_date
                 FROM booking 
                 JOIN profile 
                 ON booking.artist_id = profile.profile_id
-                WHERE client_id=:profile_id
+                JOIN timeslot 
+                ON booking.booking_id = timeslot.booking_id
+                WHERE client_id=:profile_id AND timeslot.selected = True
             """, 
             values={
                 "profile_id": current_user.profile_id
@@ -160,5 +169,35 @@ async def booking_exists(booking_id: str):
             }
         )
     if response is None: 
-        raise HTTPException(400, detail="No booking found")
+        raise HTTPException(status_code=400, detail='Booking does not exist')
     return Booking(**dict(response))
+
+async def select_time(date_time: str, booking_id: int):
+    async with database.connection(): 
+        result = await database.execute(
+            query="""
+                UPDATE timeslot SET selected = (date_time = :date_time) WHERE booking_id = :booking_id AND date_time = :date_time; 
+            """, 
+            values={
+                "date_time": date_time, 
+                "booking_id": booking_id
+            }
+        )
+    return result
+
+async def get_times(booking_id: int) -> List[datetime]:
+    async with database.connection(): 
+        result = await database.fetch_all(
+            query="""
+                SELECT date_time FROM timeslot WHERE booking_id = :booking_id; 
+            """, 
+            values={
+                "booking_id": booking_id
+            }
+        ) 
+    if result is None: 
+        raise HTTPException(status_code=404, detail="bookings not found")
+    list_response: List[datetime] = []
+    for date in result: 
+        list_response.append(date[0])
+    return list_response

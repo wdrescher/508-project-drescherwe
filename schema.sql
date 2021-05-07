@@ -43,7 +43,7 @@ CREATE TABLE artist (
     CONSTRAINT FOREIGN KEY (parlor_id) REFERENCES parlor(parlor_id)
 );
 
-CREATE TABLE booking (
+CREATE OR REPLACE TABLE booking (
     artist_id int, 
     client_id int, 
     booking_id int AUTO_INCREMENT PRIMARY KEY, 
@@ -58,10 +58,10 @@ CREATE TABLE booking (
 CREATE TABLE timeslot (
  	date_time DATETIME,
     booking_id int, 
+    selected boolean DEFAULT FALSE,
     CONSTRAINT FOREIGN KEY (booking_id) REFERENCES booking(booking_id), 
     CONSTRAINT PRIMARY KEY (date_time, booking_id)
 );
-
 
 -- Functions and Procedures
 -- -------------------------------
