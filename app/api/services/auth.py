@@ -77,3 +77,35 @@ async def check_password(username: str, password: str):
     if profile is None or not verify_password(password, profile.password): 
         return None
     return profile
+
+async def change_password(current_user: Profile, password:str): 
+    hashed_password = hash_password(password)
+    async with database.connection(): 
+        result = await database.execute(
+            query="""
+                UPDATE profile SET password = :password WHERE profile_id = :profile_id
+            """,
+            values={
+                "profile_id": current_user.profile_id, 
+                "password": hashed_password
+            }
+        )
+    return result
+
+async def edit_current_user(new_profile: Profile, current_user: Profile):
+    async with database.connection(): 
+        result = await database.execute(
+            query="""
+                UPDATE profile
+                SET 
+                    first_name=:first_name, 
+                    last_name= :last_name
+                WHERE profile_id = :profile_id
+            """, 
+            values={
+                "first_name": new_profile.first_name, 
+                "last_name": new_profile.last_name,
+                "profile_id": current_user.profile_id
+            }
+        )
+    return result

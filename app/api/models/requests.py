@@ -45,3 +45,10 @@ class CreateParlorRequest(BaseModel):
 
 class SelectTimeSlotRequest(BaseModel): 
     date_time: datetime
+
+class ChangePasswordRequest(BaseModel): 
+    password: str
+
+class UpdateUserRequest(BaseModel):
+    first_name: str
+    last_name: str
